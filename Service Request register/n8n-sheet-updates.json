@@ -1,0 +1,171 @@
+{
+  "name": "n8n-sheet-updates",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Request",
+        "formDescription": "send req",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Name"
+            },
+            {
+              "fieldLabel": "email",
+              "fieldType": "email",
+              "placeholder": "email"
+            },
+            {
+              "fieldLabel": "request",
+              "fieldType": "textarea",
+              "placeholder": "req"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "f6130040-5c5b-42e1-80cd-8c0144533c89",
+      "name": "On form submission",
+      "webhookId": "c70e2480-9776-41e8-8748-fd6c2c1cce94"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Zp0RdUN5vhSQ0WdOze0aj_l7k167q7DZl55sv5Fczv0",
+          "mode": "list",
+          "cachedResultName": "n8n-sheet-data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp0RdUN5vhSQ0WdOze0aj_l7k167q7DZl55sv5Fczv0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp0RdUN5vhSQ0WdOze0aj_l7k167q7DZl55sv5Fczv0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "email": "={{ $json.email }}",
+            "request": "={{ $json.request }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "request",
+              "displayName": "request",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        0
+      ],
+      "id": "bb9f1cf7-ff5c-48e6-af9e-5838a627a17b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hysX9Fzoo6yHsBld",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Form used to fetch data:\n\nSubmit this form in this url: http://localhost:5678/form/c70e2480-9776-41e8-8748-fd6c2c1cce94 with Name, email & request\n",
+        "height": 368,
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -176,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "8f630a27-92ec-4117-8ebc-187e8096f7fb",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Sheets updation:\n\nThe form data gets updated on the sheets automatically when submitted.",
+        "height": 288,
+        "width": 288,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "4598c6c2-42ae-4698-88a0-e70cc23d470a",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b3db3f98-1736-40e2-99f4-ea07b480009a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cefbc2892fe053e1c6c624213fba530d7cce438dd89431516794583232369227"
+  },
+  "id": "ze0hxiBBQ52yDZ-6GUbi5",
+  "tags": []
+}
