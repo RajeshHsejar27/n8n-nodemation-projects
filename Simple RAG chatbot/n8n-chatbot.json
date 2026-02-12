@@ -1,0 +1,385 @@
+{
+  "name": "n8n-chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -416,
+        -192
+      ],
+      "id": "8b04138a-f0b8-40b8-a62c-8b40693add45",
+      "name": "When chat message received",
+      "webhookId": "95296961-774e-4461-8ab7-96e3003fe631"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        80,
+        -256
+      ],
+      "id": "e6b00b23-e621-4b31-a53b-feaa3ce03774",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "gemma3:4b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        32,
+        48
+      ],
+      "id": "09c98486-aff0-4b3f-a4a3-419a4d1aa8ad",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "fNAQXF3zlM5evJYx",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        16
+      ],
+      "id": "cb3cae05-dfa7-4c97-a4e8-1d94e9249387",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "## Chat message trigger\nThis action triggers a chat with the AI Agent.",
+        "height": 320,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -544,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "c215632e-0f58-491c-93a0-f354278ea719",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## AI Agent Orchestration\n**How it works** The AI Agent will process the chat message when it is submitted & will provide appropriate response.",
+        "height": 560,
+        "width": 992,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        -368
+      ],
+      "typeVersion": 1,
+      "id": "2259e3c3-fd0f-4178-8a87-163018859e07",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Chat model loaded\nLocal Ollama (gemma3:4b) used with API key creds after registering with account online",
+        "height": 256,
+        "width": 320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "f923d27e-030c-4e31-a190-e2b644882075",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Memory\nThis is used to store chat history (I set 200) and used n8n's simple memory. Databases could also be connected and utilized.",
+        "height": 288,
+        "width": 480,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        336,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "554bab89-6cc9-4479-a425-fadb53cb68b5",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -64,
+        688
+      ],
+      "id": "6338a3cc-07a3-4769-b0c8-c3532a7bfc92",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "gemma3:4b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        992
+      ],
+      "id": "7ef9231a-6cdd-4a4b-8c7f-4bf0ed43868a",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "fNAQXF3zlM5evJYx",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## AI Agent Orchestration\n**How it works** The AI Agent will process the chat message when it is submitted & will provide appropriate response.",
+        "height": 560,
+        "width": 992,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -304,
+        576
+      ],
+      "typeVersion": 1,
+      "id": "28f62693-5126-4e9b-b935-ccdb3ef2ec62",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Chat model loaded\nLocal Ollama (gemma3:4b) used with API key creds after registering with account online",
+        "height": 256,
+        "width": 320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -288,
+        864
+      ],
+      "typeVersion": 1,
+      "id": "e2e8233f-b507-4060-ac49-e183b5178d74",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Memory\nThis is used to store chat history (I set 200) and used n8n's simple memory. Databases could also be connected and utilized.",
+        "height": 288,
+        "width": 480,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        832
+      ],
+      "typeVersion": 1,
+      "id": "40d0624c-9857-452f-9dfc-929e4cc3a740",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6edbe7de-6570-4b19-9490-53f219671813",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -656,
+        640
+      ],
+      "id": "98b4bb7a-eff7-4345-8a96-aa02c809b8a2",
+      "name": "Webhook",
+      "webhookId": "6edbe7de-6570-4b19-9490-53f219671813"
+    },
+    {
+      "parameters": {
+        "content": "## Webhook trigger\nGets input from a web app\n",
+        "height": 256,
+        "width": 304
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -784,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "e7a2579e-f4b7-48f6-855e-99902754c705",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        816,
+        672
+      ],
+      "id": "62b24378-1080-4640-a08f-0399e402be3c",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "content": "## Responder hook\nIt passes the information to the user",
+        "height": 272,
+        "width": 320,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        736,
+        560
+      ],
+      "typeVersion": 1,
+      "id": "485371bb-e33f-4792-a06a-e7b1546fe037",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $execution.id }}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        960
+      ],
+      "id": "2f03a03a-e59c-48d5-8d8b-0606895b6cde",
+      "name": "Simple Memory1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "a3cd2dae-e66c-43b9-b465-909baaa2e131",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cefbc2892fe053e1c6c624213fba530d7cce438dd89431516794583232369227"
+  },
+  "id": "ectXuy4CtnPQJPU3aGIov",
+  "tags": []
+}
