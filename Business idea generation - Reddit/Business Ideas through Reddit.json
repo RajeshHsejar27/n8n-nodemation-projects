@@ -1,0 +1,782 @@
+{
+  "name": "Business Ideas through Reddit",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        528
+      ],
+      "id": "6b6b3eeb-3403-48d8-98a0-2d0ab8fdfef9",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "startups",
+        "limit": 20,
+        "filters": {
+          "category": "hot"
+        }
+      },
+      "type": "n8n-nodes-base.reddit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        160
+      ],
+      "id": "6c83ebb1-ef5a-459f-a560-45b19c5237f0",
+      "name": "Get many posts"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "artificial",
+        "limit": 20,
+        "filters": {
+          "category": "hot"
+        }
+      },
+      "type": "n8n-nodes-base.reddit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        352
+      ],
+      "id": "be71fd9a-3f71-44e8-9f0e-5d96dc60dda1",
+      "name": "Get many posts1"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "SideProject",
+        "limit": 20,
+        "filters": {
+          "category": "hot"
+        }
+      },
+      "type": "n8n-nodes-base.reddit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        672
+      ],
+      "id": "687cdc46-eae7-4987-9ebe-499775e27670",
+      "name": "Get many posts2"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "SaaS",
+        "limit": 20,
+        "filters": {
+          "category": "hot"
+        }
+      },
+      "type": "n8n-nodes-base.reddit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        848
+      ],
+      "id": "eef589c7-f654-4e07-9b6a-7ea6d40aec37",
+      "name": "Get many posts3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7cd875da-5565-455a-bee2-c2fce2bddd52",
+              "name": "selftext",
+              "value": "={{ $json.selftext }}",
+              "type": "string"
+            },
+            {
+              "id": "4febea14-56d3-4dd2-a2e4-2e01e9c8ab71",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        160
+      ],
+      "id": "6f493cb1-bdce-43a6-b6e8-f7859c975ccc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7cd875da-5565-455a-bee2-c2fce2bddd52",
+              "name": "selftext",
+              "value": "={{ $json.selftext }}",
+              "type": "string"
+            },
+            {
+              "id": "4febea14-56d3-4dd2-a2e4-2e01e9c8ab71",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        352
+      ],
+      "id": "e8543190-b295-49c1-8c81-73eb71b201ce",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7cd875da-5565-455a-bee2-c2fce2bddd52",
+              "name": "selftext",
+              "value": "={{ $json.selftext }}",
+              "type": "string"
+            },
+            {
+              "id": "4febea14-56d3-4dd2-a2e4-2e01e9c8ab71",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        672
+      ],
+      "id": "30109b9b-1c9b-49e5-a716-175c580b5e76",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7cd875da-5565-455a-bee2-c2fce2bddd52",
+              "name": "selftext",
+              "value": "={{ $json.selftext }}",
+              "type": "string"
+            },
+            {
+              "id": "4febea14-56d3-4dd2-a2e4-2e01e9c8ab71",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        848
+      ],
+      "id": "4455c02d-d830-49c5-a127-df6758379c13",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1072,
+        480
+      ],
+      "id": "0d5c9c20-d1c8-45e1-ab07-2ebebae8ce1b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        512
+      ],
+      "id": "c67c1464-571f-4f5f-b17e-79d650d7b90d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message.content.ideas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1808,
+        512
+      ],
+      "id": "5f5841bf-4891-4946-87c1-bd04bb97d0e3",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=** Purpose **\nYou are a Startup Idea Extractor.\n\n\n** You will receive an array of Reddit posts, each with these fields:\n\n- title\n- selftext (the body)\n\nYour job is to identify all concrete business or startup ideas mentioned. If the author says the idea worked for them, extract that success detail.\n\n** For each post with at least one idea, output an object with:\n\n- startupIdea: one-sentence summary of the idea\n- success: true if the author says it succeeded (e.g. “I made $10k”, “it grew to 100 users”), otherwise false\n- successDetails: the exact phrase or metric if success=true, otherwise null\n- goodIdea: whether you think it’s a good idea or not, based on your knowledge of market saturation, viability, and size\n- pros: one sentence describing possible benefits\n- cons: one sentence describing possible limitations\n\nWrap all objects in a top-level JSON array called “ideas.”\n\nOutput only valid JSON—no explanations or extra text.\n\nUse the input data from: {{ JSON.stringify ($json.data) }}."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1472,
+        512
+      ],
+      "id": "ccbf1e90-19fa-4916-a200-297dd53c306e",
+      "name": "Message a model"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1PgAPWu9_-r0ccBhH9rgnxzYmwJNPMs2iA3Vy42szRrk",
+          "mode": "list",
+          "cachedResultName": "Lead from Reddit",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PgAPWu9_-r0ccBhH9rgnxzYmwJNPMs2iA3Vy42szRrk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PgAPWu9_-r0ccBhH9rgnxzYmwJNPMs2iA3Vy42szRrk/edit?usp=drivesdk"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Startup Idea": "={{ $json.startupIdea }}",
+            "Success or not?": "={{ $json.success }}",
+            " Details": "={{ $json.successDetails }}",
+            "Is it a Good Idea?": "={{ $json.goodIdea }}",
+            "Pros": "={{ $json.pros }}",
+            "Cons": "={{ $json.cons }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Startup Idea",
+              "displayName": "Startup Idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Success or not?",
+              "displayName": "Success or not?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " Details",
+              "displayName": " Details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Is it Good?",
+              "displayName": "Is it Good?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Benefits",
+              "displayName": "Benefits",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Issues",
+              "displayName": "Issues",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2000,
+        512
+      ],
+      "id": "7b7d5cbe-021b-425d-996d-27abead1bf9e",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9QtgPpe0WOy4Gpni",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Generating Business Ideas",
+        "formDescription": "Select a subreddit to focus on.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Subreddit",
+              "placeholder": "homeowner",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "keywords",
+              "placeholder": "issues",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        1424
+      ],
+      "id": "d5d072a3-0a8f-4b20-bacc-f7e1a5a4662d",
+      "name": "On form submission",
+      "webhookId": "62cbf887-31ba-4de7-a581-b2c12475200b"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "subreddit": "={{ $json.Subreddit }}",
+        "keyword": "={{ $json.keywords }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.reddit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        1424
+      ],
+      "id": "28edd9df-7e33-4323-9d90-fdb514d205fc",
+      "name": "Search for a post"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "667b03f8-6e67-431c-8d38-6cf2f688de5d",
+              "name": "selftext",
+              "value": "={{ $json.selftext }}",
+              "type": "string"
+            },
+            {
+              "id": "ec9697a4-5bd4-43cc-9e92-eb04a88c13c4",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        1424
+      ],
+      "id": "c5ca440b-cb65-4ba0-8d9e-78401984f22b",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        880,
+        1424
+      ],
+      "id": "2924ddb5-c3a9-4c39-8a22-dacae8a946af",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert at generating innovative business ideas. You will receive a batch of Reddit posts pulled from:\nr/{{ $('On form submission').item.json.Subreddit }}\nThese posts match the search: “{{ $('On form submission').item.json.keywords }}”.\nEach post includes a title and a selftext.\n\n** Your job is as follows:\n\n1. Analyze the content of these posts and identify up to 5 clear and distinct pain points shared by users.\n2. For every pain point, generate 1 to 2 strong business ideas that directly address the issue.\n3. Write an email summarizing the problems and proposed solutions.\n\n\nOnly return a properly formatted JSON object with the structure below:\n\n- emailSubject: A subject line like “Business ideas for r/{{ $('On form submission').item.json.Subreddit }}”\n- emailBody: A clear, friendly email that:\n\n  - Summarizes each identified pain point\n  - Presents matching business ideas beneath each point\n  - Ends with a prompt for next steps or feedback\n\n\nThe email body must be in HTML format with appropriate line breaks, bolding, and bullet points where needed.\n\nDo not output anything other than the valid JSON object.\n\nAlways introduce yourself as an AI Researcher."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1120,
+        1424
+      ],
+      "id": "8e5668bf-9a63-4848-8573-25f819183727",
+      "name": "Message a model1"
+    },
+    {
+      "parameters": {
+        "sendTo": "nrh27magnum@gmail.com",
+        "subject": "Ideas Summarizon",
+        "message": "={{ $json.message.content.emailBody }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1504,
+        1424
+      ],
+      "id": "3b0b5722-eed9-4e0d-bac7-d09db6ee0adf",
+      "name": "Send a message",
+      "webhookId": "65bde627-0d67-4ac7-a744-e025c3c35b08",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pAFpQB7SxzkxO4RT",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Search Business Ideas (Multiple Subreddits)\n**Explore reddit subreddits and get ideas about different tech startups**\n**Filter, clean and populat the Google sheets to differentiate between each idea with pros and cons**",
+        "height": 1120,
+        "width": 2260
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f0f7abb5-54af-4da6-9d58-f2c6ca6d6bed",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Get Business Ideas (Single subreddit)\n**Gets information from form submission on specific criteria and searches for business leads in that and sends summary mail**",
+        "height": 640,
+        "width": 2260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1152
+      ],
+      "id": "850169f9-f16b-4981-b55f-944adebc6ca4",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many posts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get many posts1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get many posts2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get many posts3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many posts": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many posts3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many posts2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many posts1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Search for a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search for a post": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "07a1fec9-9cb7-4ed0-8674-2af7fc577eb0",
+  "meta": {
+    "instanceId": "cefbc2892fe053e1c6c624213fba530d7cce438dd89431516794583232369227"
+  },
+  "id": "XkzhW3uMEAdNOjy0YXoEm",
+  "tags": []
+}
