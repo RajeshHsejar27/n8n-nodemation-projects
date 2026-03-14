@@ -297,9 +297,9 @@
             "Startup Idea": "={{ $json.startupIdea }}",
             "Success or not?": "={{ $json.success }}",
             " Details": "={{ $json.successDetails }}",
-            "Is it a Good Idea?": "={{ $json.goodIdea }}",
-            "Pros": "={{ $json.pros }}",
-            "Cons": "={{ $json.cons }}"
+            "Is it a Good?": "={{ $json.goodIdea }}",
+            "Benefits": "={{ $json.pros }}",
+            "Issues": "={{ $json.cons }}"
           },
           "matchingColumns": [],
           "schema": [
