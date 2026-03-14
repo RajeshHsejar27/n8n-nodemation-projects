@@ -1,0 +1,250 @@
+{
+  "name": "Hotel Customer Bookings Support",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1671a66c-6822-403e-8495-2dad8c07a681",
+      "name": "When chat message received",
+      "webhookId": "53f73c22-dce5-4fd4-b0e6-b9b000e8a213"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        224
+      ],
+      "id": "f74e48ff-c3ee-4338-bd8b-103817d8c5e4",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        432
+      ],
+      "id": "1d35fa40-7809-470c-9b7c-3216008122c5",
+      "name": "Embeddings OpenAI"
+    },
+    {
+      "parameters": {
+        "sendTo": "n8ndemos@gmail.com",
+        "subject": "New booking",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        224
+      ],
+      "id": "eb158cbb-0554-40a0-8678-7e5deda0880b",
+      "name": "Make booking",
+      "webhookId": "52f26719-ad94-4e5f-8c9a-edac4aea7d52",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pAFpQB7SxzkxO4RT",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "n8ndemos@gmail.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        608,
+        224
+      ],
+      "id": "dee577d3-adf1-49e5-8029-952872fe10e1",
+      "name": "Human Support",
+      "webhookId": "ab1f47b0-87c3-44bc-967f-03dcaec08371",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pAFpQB7SxzkxO4RT",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "fd41a87f-2996-4dab-981f-1bc9a1c45253",
+      "name": "Postgres Chat Memory"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to fetch documents related to the restaurant's knowledge base.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        736,
+        224
+      ],
+      "id": "dcc53d80-37bd-406d-9f1a-ca0f3ea49223",
+      "name": "Postgres PGVector Store"
+    },
+    {
+      "parameters": {
+        "content": "## AI Customer Agent\n* **Core Function:** Handles FAQs, reservations, and human escalations for an Italian restaurant.\n* **Logic:** Answers from a knowledge base or triggers email alerts for bookings and complex support needs.\n* **Output:** Delivers structured JSON to Google Sheets and sends professional HTML emails via Gmail.\n* **Deployment:** Production-ready for websites, WhatsApp, and Telegram integration via n8n.",
+        "height": 848,
+        "width": 1504
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "37866d05-4388-47c0-b455-a7a2f03c8ece",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=*Role*\n\nYour name is Riya, a customer support agent for an Italian restaruant called Bella Vista.\n\nYou are responsible for providing information about the restaurant using the knowledge base system.\n\nPlese ensure your communication style is friendly and to the point.\n\n**Tools**\n\nWhen a customer want to make a booking follow these steps.\n\nCollect essentials details: customer name, email address, party size, preferred date and time  and any special requests the may have.\n\nLet the customer know their booking request has been submitted to the restaurant and they will receive a confirmation shortly.\n\n\nWhen a customer wants to speak with a real person.\n\nGet their name, email or phone number.\n\nuse the Human Support tool to send their details\nTell them their request was submitted and staff will contact them soon.\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "0d749371-6792-46c1-ad2d-ddbe5ec71be0",
+      "name": "Riya"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Riya",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Riya",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make booking": {
+      "ai_tool": [
+        [
+          {
+            "node": "Riya",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human Support": {
+      "ai_tool": [
+        [
+          {
+            "node": "Riya",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Riya",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "Riya",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "857ef256-eea4-4599-84cf-e15890824857",
+  "meta": {
+    "instanceId": "cefbc2892fe053e1c6c624213fba530d7cce438dd89431516794583232369227"
+  },
+  "id": "4iXjc54Z0hyTWOMsFCKx-",
+  "tags": []
+}
