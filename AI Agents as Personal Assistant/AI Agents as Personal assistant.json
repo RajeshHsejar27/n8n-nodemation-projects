@@ -1,0 +1,1148 @@
+{
+  "name": "AI Agents as Personal assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "7ec0c2a6-0c8d-40f3-a756-0374cce37a12",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1168,
+        32
+      ],
+      "webhookId": "667892ca-ca20-42ab-a97f-a70b01aa2887"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c7004488-c1a4-4bc3-8d6c-557b8a9b4385",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        320
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "DxU0nobYZhqPf58Z",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "id": "990bc693-47b7-4422-a5ab-c589fbbb8fb1",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "12abfa22-3fb9-4943-9f03-d8e832b81242",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "29d4a79a-0a2b-4235-be29-9124c9cc552c",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -928,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "id": "05508f46-b49f-4058-acb0-a870d0ebe092",
+      "name": "download a file",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        -176
+      ],
+      "webhookId": "7f4f8d0f-2fb9-4d17-918b-5ca53d01aecc"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "e0ebfd41-b3d3-4541-8c12-de00d0d5c03b",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.6,
+      "position": [
+        -432,
+        -176
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "DxU0nobYZhqPf58Z",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8b06acbc-8ec3-43f6-9286-709f2ca80045",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7d8d5201-001c-4d9e-bcff-d683cb0f1c0b",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a826a929-4b0c-48d8-935c-b7ad6781b848",
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        112
+      ],
+      "webhookId": "0be6d3aa-a96c-44f5-90b3-b99f1d3ae433"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6ef42aa3-8cf6-4def-9e46-edf74bf2cd6f",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "617c7c87-3dd4-43bf-97cd-891c13c74b6f",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAudio",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {
+          "fileName": "data.mpga"
+        }
+      },
+      "id": "f0cee2c3-5914-4279-a3b3-a0be90466695",
+      "name": "Telegram1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        -112
+      ],
+      "webhookId": "3c855990-259f-4c80-ae37-34d7d15aacfa"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/abcd",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": ""
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"{{ JSON.stringify($json.message.content).replace(/(^\\\"|\\\"$)/g, '') }}\"\n}",
+        "options": {}
+      },
+      "id": "72842e24-b9be-4361-a4a6-8a9cd4649948",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rP7rhJqPzOYO11UxARnceK46ViDhK56ikejVIDCke8o",
+          "mode": "list",
+          "cachedResultName": "Contact database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LSZ4QlqkR39Q9RRFWaGSy_nNM5fPHRwD__dNjxxAds4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LSZ4QlqkR39Q9RRFWaGSy_nNM5fPHRwD__dNjxxAds4/edit?gid=0#gid=0"
+        },
+        "options": {}
+      },
+      "id": "c56d6b9d-8c6c-4c5f-8bf5-79e06742df94",
+      "name": "Contacts Database",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        -64,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "name": "email_Agent",
+        "description": "Call this tool to ake action in email",
+        "workflowId": {
+          "__rl": true,
+          "value": "L0o7ERpJEcGhcLI6",
+          "mode": "list",
+          "cachedResultName": "Email Agent"
+        }
+      },
+      "id": "f13be1ec-f27c-45bd-8930-3748cac29be9",
+      "name": "Email Agent",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "name": "Calendar_Agent",
+        "description": "Call this tool to manage the calendar.",
+        "workflowId": {
+          "__rl": true,
+          "value": "s0jeisV2lJvt3s8N",
+          "mode": "list",
+          "cachedResultName": "Calendar Agent"
+        }
+      },
+      "id": "7393ce3d-b32a-42f0-a693-7b94f2f37ef6",
+      "name": "Calendar Agent",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "name": "Research_Agent",
+        "description": "Call this tool to search the internet and answer the user's questions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "r48uIhIRNImfCDMs",
+          "mode": "list",
+          "cachedResultName": "Research Agent"
+        }
+      },
+      "id": "f876b829-b804-48fe-b33b-dbf221914b69",
+      "name": "Research Agent",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "model": "deepseek-r1-distill-llama-70b",
+        "options": {}
+      },
+      "id": "1373c68d-a35d-4698-a40f-5104c0450690",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=Summarize the following incoming data: {{ $json.output }}.\n\nFor calendar events, include only the event name and time.\nFor emails, provide only the email title and a brief summary of the body, excluding any timestamps.\nEnsure the output is in plain text format, without any symbols or markdown formatting."
+        }
+      },
+      "id": "e576f289-2a73-4357-9d98-b0cd00f2a4da",
+      "name": "Supervisor AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -224,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Summarize this incoming information:  {{ $json.output }}. if  asked forFor the calendar events provide only the name of the event and time. \n\nif asked for email provide just title of the email and summary of the body. no time\n\nOutput only plain text, there should be no markdown formatting or  any symbols."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c8687408-c29b-4683-90e4-03b38ef1d0e7",
+      "name": "Summarise",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.6,
+      "position": [
+        272,
+        -176
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "DxU0nobYZhqPf58Z",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "de693bd0-2a3f-4d2c-94df-eac15e79c56c",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        848
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "93195a7c-b867-4986-8130-efe0f4886062",
+      "name": "Wikipedia",
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        640,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f8df000f-e08e-4e7d-a98b-2d322e68760c",
+      "name": "SerpAPI",
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        848,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "09675a48-88c3-40f3-b727-88e376536b31",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        448,
+        1072
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "DxU0nobYZhqPf58Z",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a research assistant with access to Wikipedia and SerpAPI. First, search Wikipedia. If you don’t find the answer, use SerpAPI"
+        }
+      },
+      "id": "1eee88f4-1c50-4088-a33b-02df05cba776",
+      "name": "Research Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        448,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "abc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "abc@gmail.com"
+        },
+        "start": "={{ $fromAI(\"starttime\",\"the time the user asks for the event to start\") }}",
+        "end": "={{ $fromAI(\"endtime\",\"the time the user asks for the event to end\") }}",
+        "additionalFields": {}
+      },
+      "id": "62e6b2e5-62bc-49a4-9c24-f295710bb51c",
+      "name": "Create Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.2,
+      "position": [
+        -752,
+        1024
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "abc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "abc@gmail.com"
+        },
+        "returnAll": true,
+        "options": {
+          "timeMin": "={{ $fromAI(\"startDate\", \"the day before the requested date\") }}",
+          "timeMax": "={{ $fromAI(\"endDate\", \"the day after the requested date\") }}"
+        }
+      },
+      "id": "40b7dafb-9510-4ef9-8b45-8c21699d330d",
+      "name": "get events",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.2,
+      "position": [
+        -848,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "abc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "abc@gmail.com"
+        },
+        "start": "={{ $fromAI(\"starttime\",\"the time the user asks for the event to start\") }}",
+        "end": "={{ $fromAI(\"endtime\",\"the time the user asks for the event to end\") }}",
+        "additionalFields": {
+          "attendees": [
+            "{{ $fromAI(\"attendeeEmail\",\"the email of the user asks the event to be scheduled with\") }}"
+          ]
+        }
+      },
+      "id": "1493d3f5-ccc7-4a5e-b4eb-2bc136f61aa8",
+      "name": "Meeting with attendee",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.2,
+      "position": [
+        -592,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d41001e0-4902-4fc5-9007-2c3c18ed41b8",
+      "name": "OpenAI Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        1008
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "DxU0nobYZhqPf58Z",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c19e1565-8baa-4eb0-ad6a-1c56adb3243c",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a9840645-dab9-499c-94dc-a5ad03f3f6b6",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "=You are a calendar assistant responsible for handling calendar-related tasks. The current date and time is: {{ $now }}\n\nCreating an Event\nIf no end time is given, set the event duration to 60 minutes by default.\nUse this function only when no attendee is involved.\nCreating an Event with an Attendee\nIf an end time is not specified, the event should default to 60 minutes.\nThis function should be used only when an attendee is included.\nRetrieving Events\nUse this function to fetch scheduled events for a specific date.\nExclude any canceled events from the results.\n\n\n\n\n\n\n"
+        }
+      },
+      "id": "5cdd7fcd-a276-45cf-b29c-3d2ca8b76c5f",
+      "name": "Calendar Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -928,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "= {{ $fromAI('emailAddress', \"The receipient's email address\") }}",
+        "subject": "={{ $fromAI('emailSubject') }}",
+        "emailType": "text",
+        "message": "={{ $fromAI('emailBody') }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "ABC"
+        }
+      },
+      "id": "fe83390f-ace6-4cbb-99de-06d52b4c6599",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1664,
+        1104
+      ],
+      "webhookId": "cdf99f78-855f-4e09-af2f-637ab9981f40"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": "={{ $fromAI('limit') }}",
+        "simple": false,
+        "filters": {
+          "sender": " {{ $fromAI('senderEmail') }}"
+        },
+        "options": {}
+      },
+      "id": "65a8c168-45bd-45cf-8793-a7b2fcefd39b",
+      "name": "Gmail1",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1808,
+        1104
+      ],
+      "webhookId": "9cb5abf2-f0e4-47ab-a965-0a4a0b9efe7e"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "ff37c9e2-e7a8-4ffd-b008-8e331a471e4e",
+      "name": "OpenAI Chat Model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        1056
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "DxU0nobYZhqPf58Z",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9cf98450-ed76-4877-b306-35351fae6ae8",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bc5dcd2c-1a90-40fa-9f41-3382efdf0f15",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {}
+      },
+      "id": "37786d2a-d1e0-4966-a0ee-ae45504faa78",
+      "name": "Email Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1504,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# AI Agents as Personal assistant\n## In this workflow, we have telegram message triggered flow which will pass the message request to multiple AI agents and completes the task\n## Typical use case covered here is: Checking calendar of user for meeting, sending automated mail regarding meetings and such, get news from Internet about specific topic.\n## This can be expanded with multiple use case scenarios, but the core concept here is the orchestration of multiple AI agents working in sync to assist the user with the request.\n## Separate chains are shown for integrating individual agents as a workflow",
+        "height": 2192,
+        "width": 4048,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1712,
+        -720
+      ],
+      "typeVersion": 1,
+      "id": "fc9940ea-509b-4306-9d11-61e910577d8c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Email Agent",
+        "height": 656,
+        "width": 880,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1296,
+        624
+      ],
+      "typeVersion": 1,
+      "id": "00ae691d-2c3d-4a12-871e-10798bf48551",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Calendar agent\n**This is a calendar agent**",
+        "height": 640,
+        "width": 1088,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1280,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "f6e86a65-1d40-4b57-8f51-4333ed6a277b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Search Agent\n**This is a search agent which will search for results in google**",
+        "height": 640,
+        "width": 1328,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "857c57b2-a114-4a58-8d1f-08d7d27181d4",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Multi AI Agents for user assistance",
+        "height": 976,
+        "width": 3440,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1280,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "28233f91-515d-4a6a-8a5d-261f43b099a4",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Supervisor AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "download a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download a file": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Supervisor AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Supervisor AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Summarise",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contacts Database": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Supervisor AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supervisor AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarise": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Research Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "Research Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "Research Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Research Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get events": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meeting with attendee": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Calendar Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "Email Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Email Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Email Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Agent1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4b3f6f7a-bf5c-42ab-a433-ce4012a4fd8e",
+  "meta": {
+    "instanceId": "cefbc2892fe053e1c6c624213fba530d7cce438dd89431516794583232369227"
+  },
+  "id": "dJN88yHkWM7ys34HboQxA",
+  "tags": []
+}
