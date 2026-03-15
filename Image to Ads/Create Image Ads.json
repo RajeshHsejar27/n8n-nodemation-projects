@@ -1,0 +1,396 @@
+{
+  "name": "Create Image Ads",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Image",
+        "formDescription": "Please provide a photo of the product without packaging so that we can apply the selected modifications.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "data",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Tagline",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1056,
+        1040
+      ],
+      "id": "990392d4-2365-4da7-8101-bdce84aa0911",
+      "name": "On form submission",
+      "webhookId": "83ebfd8e-0504-4279-a3ca-164529f61c35"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i_j9O1A-Ic3o8UQDT_WVM-jNpagsPj4DUwEk-GYYeU4",
+          "mode": "list",
+          "cachedResultName": "Image to Ads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i_j9O1A-Ic3o8UQDT_WVM-jNpagsPj4DUwEk-GYYeU4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i_j9O1A-Ic3o8UQDT_WVM-jNpagsPj4DUwEk-GYYeU4/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "to create"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -656,
+        1040
+      ],
+      "id": "122b8e0d-5d1a-41f9-9720-2870c26eccc9",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9QtgPpe0WOy4Gpni",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/cloud_name/image/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "upload_preset",
+              "value": "n8n_uploads"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -848,
+        1040
+      ],
+      "id": "ab6ab0c3-3edd-4545-a6a1-caf64a4f098f",
+      "name": "Upload Image"
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "chat_id_from_telegram",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        1136
+      ],
+      "id": "36e5f95d-212f-4518-a039-34cb7c51d819",
+      "name": "Telegram",
+      "webhookId": "2fa3e7fc-3c76-44bd-af96-d2d3998c0d37"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -352,
+        896
+      ],
+      "id": "6efd9780-c297-4959-b73b-f80e102d1e5b",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "915e18f3-dfd2-46c4-bbdb-688bc1721cf5",
+              "leftValue": "={{ $('Google Sheets').item.json.Status }}",
+              "rightValue": "to create",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        1136
+      ],
+      "id": "d7b353a9-2813-4876-8f99-cf02092ab2d7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/edits",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.Prompt }} Make sure product is centered. Put In Bold 3d text below the product  with {{ $('Google Sheets').item.json['Text Theme'] }} theme the words \"{{ $('On form submission').item.json.Tagline }}\""
+            },
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "name": "size",
+              "value": "1024x1536"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "quality",
+              "value": "high"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        912
+      ],
+      "id": "6d84e3fc-2379-4fde-88c8-c263639a001b",
+      "name": "Create Image",
+      "credentials": {
+        "openAiApi": {
+          "id": "DxU0nobYZhqPf58Z",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        1136
+      ],
+      "id": "385601c0-bf37-47ec-9468-a49d453ddb0c",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Upload Image').item.json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -96,
+        912
+      ],
+      "id": "dc4504c5-eef1-48e7-8bcd-344f2ccad332",
+      "name": "Get Image"
+    },
+    {
+      "parameters": {
+        "content": "# Get Ideas\n**From fom submisson, get ideas for text which we can later use.**\n**Only those with 'to create' field in sheet is processed further.**",
+        "height": 420,
+        "width": 640,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1136,
+        896
+      ],
+      "id": "b613b68c-8d14-4e5c-bf1c-d4ed9036bbbd",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Create Ads\n**Image is created with help of AI tool and then processed and sent to Telegram chat.**",
+        "height": 620,
+        "width": 860
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        768
+      ],
+      "id": "08939134-bb15-4faa-a618-09aba9f60d52",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Upload Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image": {
+      "main": [
+        [
+          {
+            "node": "Create Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fde75444-fd65-4d1e-a234-d596e85c36cc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cefbc2892fe053e1c6c624213fba530d7cce438dd89431516794583232369227"
+  },
+  "id": "m204x2NaDbz89FVw4FlKd",
+  "tags": []
+}
