@@ -1,0 +1,388 @@
+{
+  "name": "Tshirt Design Remake",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-image-1\",\n  \"prompt\": \"{{ $json.escapedString }}\",\n  \"n\": 1,\n  \"size\": \"1024x1536\",\n  \"quality\": \"high\"\n}",
+        "options": {}
+      },
+      "id": "08f942c5-0090-481e-894c-ef6b87861e3f",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2704,
+        848
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "id": "fef2de7e-a37a-4a36-91d0-974dfc3289bb",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        2912,
+        848
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content }}",
+        "options": {
+          "systemMessage": "=\nYou are a creative prompt generation assistant specialized in T-shirt artwork refinement.\n\nYour job is to analyze an existing T-shirt design user message above and create a new, upgraded version that preserves the original layout, overall structure, and message placement, but enhances its visual style, mood, and artistic quality.\n\n- Keep all key design elements and text in their original positions — do not remove or move important words or graphics.\n- Improve the typography by suggesting more expressive font styling (e.g., handwritten, retro, bold serif, clean sans-serif, brush script), and enhance the lettering arrangement to feel more dynamic, elegant, or visually balanced.\n- Enhance illustrative elements, texture, and background details to feel more artistic, emotional, or premium — without overwhelming the message.\n- Use descriptive, natural language to generate a final prompt that can be used with Midjourney, DALL·E, or other image-generation AIs.\n- The new version should feel like a refined and artistic redesign, not a complete concept change.\n- Solid black background\n\n** Rule **\n- Output the final design prompt as a single plain-text sentence, without markdown, formatting, or line breaks. Make sure the prompt is concise but expressive, suitable for use inside a JSON payload or passed into an image generation API. All key elements must remain: characters, objects, text styling, and background mood — but the format should be clean, compact, and system-friendly.\n- Format the output as a single line of plain text, using escaped double quotes (\\\") where needed, suitable for inclusion in a JSON string without formatting issues."
+        }
+      },
+      "id": "f4958a15-8aa2-4521-ad5f-27029dcdeb6e",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2064,
+        848
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "GPT-4O"
+        },
+        "imageUrls": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {}
+      },
+      "id": "757b6957-2b6c-4689-a8cd-7c21f6395e02",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        1888,
+        848
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "b0b72f7d-e42c-4971-9666-3e9ccefbb46c",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1984,
+        1072
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d002df14-e8ce-4096-8c53-6ff7f9a87603",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        1264,
+        864
+      ],
+      "webhookId": "22b3dae3-95e5-4bfa-8187-9dca2dc72f85",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cb4e9a22-d429-4d11-b536-5d8760dd5042",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              },
+              "leftValue": "={{ $json.chatInput }}",
+              "rightValue": "https://"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0d8924bc-46a6-4ba8-903c-0d5bc5d6837c",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1632,
+        864
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawContent = $json.output;\n\n// 1. Replace all line breaks with spaces\nlet cleaned = rawContent.replace(/\\n/g, ' ');\n\n// 2. Trim any extra spaces at the beginning and end\ncleaned = cleaned.trim();\n\n// 3. Escape backslashes and double quotes for JSON safety\nlet escaped = cleaned.replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"');\n\n// 4. Remove leading or trailing escaped quotes if accidentally included\nescaped = escaped.replace(/^\\\\\\\"/, '').replace(/\\\\\\\"$/, '');\n\n// 5. Return the cleaned and fully escaped string\nreturn [\n  {\n    json: {\n      escapedString: escaped\n    }\n  }\n];\n"
+      },
+      "id": "266426e2-2376-424e-adae-d062b13bc4e6",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2448,
+        848
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "## Provide an image URL",
+        "height": 320,
+        "width": 400,
+        "color": 4
+      },
+      "id": "24534dc0-2176-40c3-b6f0-342e1c964025",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Analyze image and generate a new prompt",
+        "height": 580,
+        "width": 540,
+        "color": 6
+      },
+      "id": "1a7df6a5-1636-4790-891c-4bac0cd77bb7",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1840,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Create a new T-shirt Design",
+        "height": 320,
+        "width": 460,
+        "color": 3
+      },
+      "id": "2d9dfed1-35a5-4756-b8fe-0b3e8131468e",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2624,
+        752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "name": "test",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1DxluzVp4P42g4P7Xxx-Pf-t-w95SlEmo",
+          "mode": "list",
+          "cachedResultName": "Tshirt Designs",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1DxluzVp4P42g4P7Xxx-Pf-t-w95SlEmo"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3280,
+        848
+      ],
+      "id": "da7239d8-5352-4c84-9842-6d2c711760ac",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "5VDrBdg2O86u4mdp",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Check if the message is a URL",
+        "height": 320,
+        "width": 280,
+        "color": 5
+      },
+      "id": "6a07942e-833a-43fd-9208-f1cb6dd45890",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1552,
+        752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Save Your Design",
+        "height": 320,
+        "width": 460
+      },
+      "id": "d054909f-ec79-4aaf-af5a-ee8f17bbf16d",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3104,
+        752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Tshirt Design Remake\n**Input: The workflow captures the T-shirt mockup image via a URL or direct file upload.**\n\n**Analysis: GPT-4 Vision scans the image to extract core elements like layout, style, and typography.**\n\n**Refinement: An AI agent strips away mockup artifacts (collars, shadows) and reformats the visual data into a print-optimized prompt.**\n\n**Formatting: A JavaScript node sanitizes the prompt to ensure seamless compatibility with the image generation API.**\n\n**Generation: The final prompt triggers the DALL-E/Image API to produce a high-quality, print-ready graphic on a black background.**",
+        "height": 1024,
+        "width": 2880
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        432
+      ],
+      "typeVersion": 1,
+      "id": "f6898f5c-29c4-48ed-8b06-784e0414ad6e",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "cf1b7d88-daca-4411-9958-e940f6198d3e",
+  "meta": {
+    "instanceId": "cefbc2892fe053e1c6c624213fba530d7cce438dd89431516794583232369227"
+  },
+  "id": "XZeOB9yYzbPhdyKZ_vbey",
+  "tags": []
+}
