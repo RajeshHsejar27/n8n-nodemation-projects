@@ -1,0 +1,437 @@
+{
+  "name": "Youtube Shorts Generation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -608,
+        352
+      ],
+      "id": "a8014e79-83b6-4df3-85de-c632dbe35746",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        512
+      ],
+      "id": "f77bd2ef-a877-456e-8937-36faf8e8733d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "DxU0nobYZhqPf58Z",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-image-1\",\n  \"prompt\": \"{{ $json.output }}\",\n  \"quality\": \"high\",\n  \"size\": \"1024x1536\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        112,
+        112
+      ],
+      "id": "b5b28658-9e52-489e-9cb5-e1c049393f86",
+      "name": "Create Image",
+      "credentials": {
+        "openAiApi": {
+          "id": "DxU0nobYZhqPf58Z",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Create a prompt to use for image generation",
+        "options": {
+          "systemMessage": "=Purpose\nThis assistant generates detailed, natural-language image prompts for AI image generators, specifically focusing on forest ecosystems. It creates:\n\nA vivid, descriptive scenario featuring a forest animal interacting with its environment or a hidden wonder.\n\nLush, untamed wilderness settings described in a vibrant, realistic photographic style.\n\nLighting details for a dappled forest floor or ethereal light filtering through a canopy.\n\nOutput that is direct, visual, and free from extra explanation or headings.\n\nCapabilities\n\nDesign unique image prompts with precise animal movements and forest floor details.\n\nInclude natural elements like moss-covered stones, ferns, or ancient gnarled roots for realism.\n\nSpecify soft, dappled light and shallow depth of field to enhance the sense of depth.\n\nUse immersive, cinematic wording to guide AI generators toward a photorealistic result.\n\nInteraction Style\n\nWrite in clear, rich descriptive language.\n\nAvoid headings or instructions in the output — just the image prompt itself.\n\nFocus on a serene, majestic, and visually engaging tone.\n\nEmphasize sensory details like textures, damp soil, filtered light, and atmosphere.\n\nExample Output Prompt\n\nA nimble red squirrel balances precariously on a moss-covered, fallen oak branch deep within an ancient forest, its paws delicately holding a textured acorn. Below, the forest floor is a tapestry of emerald ferns, damp dark soil, and clusters of small, vibrant orange mushrooms. Ethereal golden sunlight pierces through the dense canopy above, casting long, soft-edged beams of light that illuminate floating dust motes and highlight the intricate, bristly texture of the squirrel’s fur. In the background, towering, out-of-focus tree trunks stretch into the mist, creating a sense of deep, untamed space. The atmosphere is tranquil and magically quiet, captured in high-detail with a natural, earthy color palette."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        352
+      ],
+      "id": "399591d9-5b4c-49e2-9715-33476c84f516",
+      "name": "Create Prompt"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        112,
+        352
+      ],
+      "id": "09b3020b-053c-45cc-83f6-214f781d80fa",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.cloudinary.com/v1_1/cloud_name/image/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "upload_preset",
+              "value": "n8n_uploads"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        112,
+        592
+      ],
+      "id": "8f2d0cad-b771-4ada-a611-9fe1bcfc6acf",
+      "name": "Upload Image"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://queue.fal.run/fal-ai/minimax/hailuo-02/pro/image-to-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"image_url\": \"{{ $json.url }}\",\n  \"aspect_ratio\": \"9:16\",\n  \"prompt\": \"[Static Camera]\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        112
+      ],
+      "id": "51f741e4-656d-4d51-b843-4e75272c38cd",
+      "name": "Image to Video"
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        352
+      ],
+      "id": "79bda4c2-831b-492a-bd47-c0faf932c164",
+      "name": "Wait 10 Minutes",
+      "webhookId": "c0def515-86f2-4cdf-85ed-8145d1d33d12"
+    },
+    {
+      "parameters": {
+        "content": "## Create Prompt",
+        "height": 480,
+        "width": 700,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        192
+      ],
+      "id": "94dbcb39-7d77-4500-a80d-3e947c761465",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Image",
+        "height": 820,
+        "width": 320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d51f370b-976b-4867-ac88-2caf2bc89fde",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Image to Video",
+        "height": 820,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        352,
+        0
+      ],
+      "id": "398e3441-90a6-4559-8723-aadddb76321e",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/minimax/requests/{{ $json.request_id }}/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        592
+      ],
+      "id": "e5dd6e0a-e461-4b77-a8c9-fd636e0c6dc0",
+      "name": "Get Video"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "121HYTkyJi2x3lx7C0GHiYyQ-sxUaP89B1mB6T0MSwuk",
+          "mode": "list",
+          "cachedResultName": "Youtube shorts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/121HYTkyJi2x3lx7C0GHiYyQ-sxUaP89B1mB6T0MSwuk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/121HYTkyJi2x3lx7C0GHiYyQ-sxUaP89B1mB6T0MSwuk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Image Prompt": "={{ $('Create Prompt').item.json.output }}",
+            "Image URL": "={{ $('Upload Image').item.json.url }}",
+            "Video URL": "={{ $json.response_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Image Prompt",
+              "displayName": "Image Prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image URL",
+              "displayName": "Image URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Video URL",
+              "displayName": "Video URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        800,
+        352
+      ],
+      "id": "3b98d3cb-6dea-48ca-8590-c1cf2e5bd440",
+      "name": "Save Information",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9QtgPpe0WOy4Gpni",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Youtube Shorts generation\n**According to the prompt we set, this workflow will create an image and then convert it into a video which can be published as shorts in any platforms.**\n**The image and video data is captured in google sheets for reference.**",
+        "height": 1008,
+        "width": 1968,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "e8ead3bc-f88a-4d3f-af8a-805e38f67e08",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Prompt": {
+      "main": [
+        [
+          {
+            "node": "Create Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image": {
+      "main": [
+        [
+          {
+            "node": "Image to Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image to Video": {
+      "main": [
+        [
+          {
+            "node": "Wait 10 Minutes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video": {
+      "main": [
+        [
+          {
+            "node": "Save Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c62ff054-6519-4a1a-9eb0-82f28ccea4ea",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cefbc2892fe053e1c6c624213fba530d7cce438dd89431516794583232369227"
+  },
+  "id": "4UCYOMWpUgF8xz3vdd3j_",
+  "tags": []
+}
