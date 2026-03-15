@@ -1,0 +1,918 @@
+{
+  "name": "ASMR + Veo3",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        4000,
+        1360
+      ],
+      "id": "5c1ccf9f-1f83-4c8c-93d6-eaf1d6403675",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6128,
+        1168
+      ],
+      "id": "b3b7cf52-834c-413b-93a7-a3f1a7730ed6",
+      "name": "Get Video"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"target\": {\n      \"targetType\": \"tiktok\",\n      \"isYourBrand\": false,\n      \"disabledDuet\": false,\n      \"privacyLevel\": \"PUBLIC_TO_EVERYONE\",\n      \"isAiGenerated\": true,\n      \"disabledStitch\": false,\n      \"disabledComments\": false,\n      \"isBrandedContent\": false,\n      \"autoAddMusic\": true\n    },\n  \"content\": {\n    \"text\": \"{{ $('Generate Video Idea').first().json.output.caption }}\",\n    \"platform\": \"tiktok\",\n    \"mediaUrls\": [\"{{ $json.url }}\"]\n    },\n    \"accountId\": \"5757\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5584,
+        1584
+      ],
+      "id": "a8677454-f2c1-4b1a-b221-3c22f62fd27a",
+      "name": "Publish on TikTok"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"target\": {\n      \"targetType\": \"youtube\",\n      \"title\": \"{{ $('Generate Video Idea').item.json.output.caption }}\",\n      \"privacyStatus\": \"public\",\n      \"shouldNotifySubscribers\": false\n    },\n    \"content\": {\n      \"text\": \"\",\n      \"platform\": \"youtube\",\n      \"mediaUrls\": [\"{{ $('Upload to Blotato').item.json.url }}\"]\n    },\n    \"accountId\": \"4416\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5760,
+        1584
+      ],
+      "id": "a8605037-dcfc-40b6-b804-89faca14d2f3",
+      "name": "Publish on Youtube Shorts"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.video.url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6480,
+        1168
+      ],
+      "id": "54ab2a91-a45b-45a2-96be-eb42a43717a4",
+      "name": "Upload to Blotato"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"target\": {\n      \"targetType\": \"linkedin\"\n    },\n    \"content\": {\n      \"text\": \"{{ $('Generate Video Idea').item.json.output.caption }}\",\n      \"platform\": \"linkedin\",\n      \"mediaUrls\": [\"{{ $('Upload to Blotato').item.json.url }}\"]\n    },\n    \"accountId\": \"3159\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5936,
+        1584
+      ],
+      "id": "2af2cbdb-da74-4327-987b-00f20bfca18c",
+      "name": "Linkedin"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9bc6644d-ae52-45e5-b522-b4784851efa9",
+              "name": " List",
+              "value": "={{ $json['Object Type'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4544,
+        1360
+      ],
+      "id": "be0d2124-bbe9-4326-b218-9e0249cde760",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1vTBzDytIklgkHRakoro60301xY6ir9k73OAWvxBinyM",
+          "mode": "list",
+          "cachedResultName": "ASMR with Veo3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vTBzDytIklgkHRakoro60301xY6ir9k73OAWvxBinyM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vTBzDytIklgkHRakoro60301xY6ir9k73OAWvxBinyM/edit?gid=0#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        4176,
+        1360
+      ],
+      "id": "d9e953a3-4069-43e7-aea5-c0fa627eedde",
+      "name": "Get Past Videos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9QtgPpe0WOy4Gpni",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Object Type"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        4368,
+        1360
+      ],
+      "id": "5363fba5-adc4-4349-a36d-e5b03c4fd021",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "description": "=** Purpose **\n\n- Use this Think Node to manage the entire prompt creation process for glass fruit ASMR-style video concepts. This node is designed to help you think through each creative decision before the actual prompt is written.\n- Your job is to simulate a creative director’s thinking phase — guiding yourself step by step through what the video should feel like, look like, and focus on, before it becomes a final prompt.\n\n\n** What You’re Creating **\nYou're imagining a short, cinematic ASMR video where a realistic, glass-like fruit is being cut. These videos should be visually satisfying, immersive, and designed for short-form viral appeal.\n\n\n** Step-by-Step Thinking Process **\n\n1. Fruit Concept\n\n- What is the name of the fruit?\n- What color and texture would it have if made of glass?\n- How would light behave through it (e.g., translucent, tinted, reflective)?\n\n** Visual Mood **\n\n- What is the overall aesthetic? (e.g. sleek, minimal, cozy, ultra-clean?)\n- What's the surface beneath the fruit? (e.g. marble, wood, slate)\n- What colors dominate the scene?\n\n** Cutting Action **\n\n- How does the knife enter the scene? From what side? Fast or slow?\n- What type of cut is being made? (e.g. vertical slice, diagonal split)\n- What should the breaking or slicing moment look like?\n\n** Camera Details **\n\n- What is the camera angle and lens type? (e.g. macro close-up, slight overhead)\n- Is there any camera motion? (e.g. slow dolly in, steady pan, subtle shake)\n- How focused or shallow is the depth of field?\n\n** Lighting & Atmosphere **\n\n- What kind of lighting is used? (e.g. soft studio light, spotlight, diffused glow)\n- Are there any reflections or shadows?\n- Is there movement in the background? (e.g. fabric, dust, light flicker)\n\n** ASMR Sensory Hints **\n\n- What kind of sensation or reaction should this video trigger in the viewer?\n- Should it feel cold and clean, or warm and soothing?\n- What moment should feel the most satisfying?\n\n** End Goal **\nOnce you've thought through all the above, pass your decisions into the Prompt Generation Node to create the final cinematic prompt for the video tool."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        5200,
+        1536
+      ],
+      "id": "37edb439-b07a-4549-b20b-458c36cce484",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=List of exisiting objects videos: {{ $json[' List'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=** Purpose **\nYou generate creative ASMR video ideas featuring unique fruits imagined as if they were made of translucent colored glass and sliced in close-up. These videos should feel visually satisfying, aesthetic, and designed to go viral in the ASMR/glass-cutting community.\n\n** Output Requirements **\nYour response must include:\n\nobject – The name of the selected fruit, prefixed by “Glass” (e.g., “Glass Mango”).\ncaption – A simple, soothing ASMR-style label like “Glass Mango ASMR”.\n\nDo not include punctuation, extra commentary, or repeated fruits from the provided list.\n\n** JSON Output Parser **\nEvery output must strictly follow this format:\n\n{\n\"object\": \"\",\n\"caption\": \"\"\n}\n\n** Sample Outputs **\n\nExample 1\n{\n\"object\": \"Glass Apple\",\n\"caption\": \"Glass Apple ASMR\"\n}\n\nExample 2\n{\n\"object\": \"Glass Starfruit\",\n\"caption\": \"Glass Starfruit ASMR\"\n}\n\nExample 3\n{\n\"object\": \"Glass Passionfruit\",\n\"caption\": \"Glass Passionfruit ASMR\"\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        4720,
+        1360
+      ],
+      "id": "fe69201b-488b-4d21-a0d1-cfb1f3f663fd",
+      "name": "Generate Video Idea"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        4688,
+        1536
+      ],
+      "id": "2efc24a8-7ef3-4ca8-adf7-a8e29baaa55d",
+      "name": "OpenAI Chat Model2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        5056,
+        1536
+      ],
+      "id": "3551320a-ce19-4d3b-919a-c4f272bf34f3",
+      "name": "OpenAI Chat Model3"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\"object\": \"\",\n\"caption\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4896,
+        1536
+      ],
+      "id": "94cda911-9e34-44ca-9799-2a193708e38c",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a prompt for the video based on the following information:\n\nObject: {{ $json.output.object }}\nCaption: {{ $json.output.caption }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=** Purpose **\nYou are a professional prompt generator for AI video tools that produce cinematic, close-up ASMR-style visuals. Your job is to take a fruit-based concept and turn it into a richly visual, camera-aware, sensorial prompt for generating a viral, high-quality short-form video.\n\nThese videos should mimic the feel of popular ASMR content: hyper-detailed slicing of glass-textured fruits, ultra-close framing, soft lighting, and satisfying sounds and visuals.\n\n\n** Prompt Structure Guidelines **\nEach prompt should be cinematic and immersive. Include:\n\nScene setup – Describe the environment (e.g. cutting board, counter texture, lighting around the area).\n\nFruit details – Describe the fruit in hyper-realistic, glass-like detail: its translucency, color, texture, and how it interacts with light.\n\nCutting moment – Include how the knife enters frame, the motion (e.g. slow vertical slice, gentle sawing), and the way the fruit reacts (cracks, splits, reflections).\n\nCamera movement – Add one cinematic camera motion (e.g. macro close-up pan, slow zoom-in, dolly slide).\n\nLighting & mood – Emphasize soft studio light, reflections, shadows on the surface, maybe slight glow through the glass.\n\nStyle & realism – Mention ASMR softness, ultra-sharp macro depth, slight audio presence (cutting sound implied visually), and viral-worthy visual tone.\n\n\n** Input **\nYou will receive:\n\n- object (e.g. \"Glass Mango\")\n- caption (e.g. \"Glass Mango ASMR\")\n\nReturn only the complete, vivid video prompt — no extra comments or formatting.\n\n\n** Example Output **\nA crystal-clear glass mango rests on a cool slate cutting board under soft top-down studio lights. Its amber and orange hues glow slightly as light refracts through its curved surface. The camera slowly zooms in from an angle, focusing on delicate reflections and subtle surface texture. A sharp kitchen knife enters the frame from the right in ultra-slow motion, slicing through the fruit with a satisfying crack. Shards split cleanly, with light scattering across the board. Glass-like juice glimmers at the edge. The scene is clean, quiet, and deeply satisfying — perfect for an ASMR loop. Shot in ultra-high detail with soft macro depth and a smooth dolly movement."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        5088,
+        1360
+      ],
+      "id": "5d14056c-dc01-4e9e-9a3b-5e0ad1c8cfb7",
+      "name": "Generate Prompt"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"prompt\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        5328,
+        1536
+      ],
+      "id": "92bb6dd1-592f-4378-b4df-afd21bf6e9dc",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        6304,
+        1168
+      ],
+      "id": "e7c2a129-1bf2-40b7-a6d5-e7c26f6244f8",
+      "name": "Wait 20 Seconds",
+      "webhookId": "cac77986-48d6-4ce9-aeca-f14e24e24e8e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/veo3",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $('Generate Prompt').item.json.output.prompt.replace(/\\n/g, '').replace(/\\*/g, '') }}"
+            },
+            {
+              "name": "generate_audio",
+              "value": "true"
+            },
+            {
+              "name": "aspect_ratio",
+              "value": "9:16"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5760,
+        1168
+      ],
+      "id": "39cd6f2e-f4b3-40e8-a3d7-0a2e3ae4eb6a",
+      "name": "Create Video"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1vTBzDytIklgkHRakoro60301xY6ir9k73OAWvxBinyM",
+          "mode": "list",
+          "cachedResultName": "ASMR with Veo3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vTBzDytIklgkHRakoro60301xY6ir9k73OAWvxBinyM/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vTBzDytIklgkHRakoro60301xY6ir9k73OAWvxBinyM/edit?gid=0#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "done",
+            "URL": "={{ $('Upload to Blotato').item.json.url }}",
+            "Object Type": "={{ $('Generate Video Idea').item.json.output.object }}"
+          },
+          "matchingColumns": [
+            "Object Type"
+          ],
+          "schema": [
+            {
+              "id": "Object Type",
+              "displayName": "Object Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        6480,
+        1584
+      ],
+      "id": "dd3b1868-054c-4c34-8111-4367f3babb20",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9QtgPpe0WOy4Gpni",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1vTBzDytIklgkHRakoro60301xY6ir9k73OAWvxBinyM",
+          "mode": "list",
+          "cachedResultName": "ASMR with Veo3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vTBzDytIklgkHRakoro60301xY6ir9k73OAWvxBinyM/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vTBzDytIklgkHRakoro60301xY6ir9k73OAWvxBinyM/edit?gid=0#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Object Type": "={{ $('Generate Video Idea').item.json.output.object }}",
+            "Status": "In progress"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Object Type",
+              "displayName": "Object Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        5584,
+        1168
+      ],
+      "id": "5ba498f3-6e17-4f00-a193-942405f81640",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9QtgPpe0WOy4Gpni",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"target\": {\n      \"targetType\": \"instagram\"\n    },\n    \"content\": {\n      \"text\": \"{{ $('Generate Video Idea').item.json.output.caption }}\",\n      \"platform\": \"instagram\",\n      \"mediaUrls\": [\"{{ $('Upload to Blotato').item.json.url }}\"]\n    },\n    \"accountId\": \"5370\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6128,
+        1584
+      ],
+      "id": "378f9010-be63-448d-91d0-5eef397db2e6",
+      "name": "Instagram"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"accountId\": \"3991\",\n    \"target\": {\n      \"targetType\": \"facebook\",\n      \"pageId\": \"692981360555594\"\n    },\n    \"content\": {\n      \"text\": \"{{ $('Generate Video Idea').item.json.output.caption }}\",\n      \"mediaUrls\": [\"{{ $('Upload to Blotato').item.json.url }}\"],\n      \"platform\": \"facebook\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6304,
+        1584
+      ],
+      "id": "67a1d0a9-afd2-45b6-8e09-df623637b001",
+      "name": "Facebook"
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5936,
+        1168
+      ],
+      "id": "27d1090e-20b6-49f7-a2ed-8f26d0cb36a3",
+      "name": "Wait 4 Minutes",
+      "webhookId": "67f64809-657d-468e-8556-d2471a27f193"
+    },
+    {
+      "parameters": {
+        "content": "# Generate Idea",
+        "height": 780,
+        "width": 1600
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3856,
+        1056
+      ],
+      "id": "d768031b-4c0d-46c2-8755-9a54410ab53f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Create Video",
+        "height": 380,
+        "width": 1220,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5488,
+        1056
+      ],
+      "id": "dd12a9ec-5a8f-4a18-b63e-0ec9befec347",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Publish to Social Media",
+        "height": 380,
+        "width": 1220,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5488,
+        1456
+      ],
+      "id": "b30ce810-3d55-4d09-9c8f-0415d098efec",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Generate ASMR videos with Veo3 and publish it to social media\n**Get video idea and then convert it into a video**\n**Check google sheets if the idea is already there or not, if it is there then skip it.**\n**After generating, it can publish to social media and update the sheet on status**",
+        "height": 320,
+        "width": 2240,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3856,
+        688
+      ],
+      "typeVersion": 1,
+      "id": "3f65702c-0573-4cc9-b68e-dd0bf2add231",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {
+    "Generate Prompt": [
+      {
+        "json": {
+          "output": {
+            "prompt": "A stunning glass pineapple is positioned on a rustic wooden cutting board, bathed in soft, diffused studio light. Its bright yellow and green tones catch the light beautifully, creating a mesmerizing play of reflections and shadows across its textured surface. The camera starts with a macro close-up, slowly dolly sliding in towards the center of the pineapple, emphasizing the intricate diamond-shaped facets shining like precious jewels. A polished kitchen knife glides into the frame from the right, moving in slow motion as it slices vertically through the pineapple. The moment of contact produces a soft, satisfying crack, and glistening juice beads mimic glass droplets that run down the sides. Throughout, the ASMR atmosphere is enriched by gentle light and depth, highlighting the crispness of the cut and the serene, calming vibe perfect for a viral ASMR visual."
+          }
+        }
+      }
+    ],
+    "Generate Video Idea": [
+      {
+        "json": {
+          "output": {
+            "object": "Glass Pineapple",
+            "caption": "Glass Pineapple ASMR"
+          }
+        }
+      }
+    ],
+    "Create Video": [
+      {
+        "json": {
+          "status": "IN_QUEUE",
+          "request_id": "78a2402a-1955-4a26-b00e",
+          "response_url": "https://queue.fal.run/fal-ai/veo3/requests/78a2402a-1955-4a26-b00e",
+          "status_url": "https://queue.fal.run/fal-ai/veo3/requests/78a2402a-1955-4a26-b00e/status",
+          "cancel_url": "https://queue.fal.run/fal-ai/veo3/requests/78a2402a-1955-4a26-b00e/cancel",
+          "logs": null,
+          "metrics": {},
+          "queue_position": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Past Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video": {
+      "main": [
+        [
+          {
+            "node": "Wait 20 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish on TikTok": {
+      "main": [
+        [
+          {
+            "node": "Publish on Youtube Shorts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Blotato": {
+      "main": [
+        [
+          {
+            "node": "Publish on TikTok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish on Youtube Shorts": {
+      "main": [
+        [
+          {
+            "node": "Linkedin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Past Videos": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Generate Video Idea",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Generate Prompt",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Video Idea": {
+      "main": [
+        [
+          {
+            "node": "Generate Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Video Idea",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Generate Video Idea",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Generate Prompt",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Prompt": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 20 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Upload to Blotato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Linkedin": {
+      "main": [
+        [
+          {
+            "node": "Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video": {
+      "main": [
+        [
+          {
+            "node": "Wait 4 Minutes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Create Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram": {
+      "main": [
+        [
+          {
+            "node": "Facebook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 4 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e643dafd-3771-4296-b3e2-7fa07fad0fba",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cefbc2892fe053e1c6c624213fba530d7cce438dd89431516794583232369227"
+  },
+  "id": "2FO1wbYGhg997YiXAY_4a",
+  "tags": []
+}
